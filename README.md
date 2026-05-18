@@ -111,19 +111,19 @@ User uploads a file
 Create a `.env` file in the project root:
 
 ```env
-DATABASE_URL=postgresql://postgres:archi123@localhost:5432/ai_notes
-SECRET_KEY=your-secret-key
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+DATABASE_URL=xyz
+SECRET_KEY=
+ALGORITHM=
+ACCESS_TOKEN_EXPIRE_MINUTES=
 GROQ_API_KEY=your-groq-api-key
-REDIS_URL=redis://localhost:6379/0
+REDIS_URL=
 ```
 
 When running with Docker Compose, the API container uses the internal PostgreSQL hostname from `docker-compose.yml`:
 
 ```env
-DATABASE_URL=postgresql://postgres:archi123@postgres:5432/ai_notes
-REDIS_URL=redis://redis:6379/0
+DATABASE_URL=
+REDIS_URL=
 ```
 
 ## Local Setup
