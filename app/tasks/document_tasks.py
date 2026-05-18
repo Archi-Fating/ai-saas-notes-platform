@@ -51,10 +51,10 @@ def process_document_task(
                 chunk
             ).tolist()
 
-            collection.add(
+            collection.upsert(
 
                 ids=[
-                    f"{filename}_{index}"
+                    f"upload_{user_id}_{filename}_{index}"
                 ],
 
                 embeddings=[
@@ -68,7 +68,9 @@ def process_document_task(
                 metadatas=[
                     {
                         "user_id": user_id,
-                        "source": filename
+                        "source": filename,
+                        "title": filename,
+                        "type": "upload"
                     }
                 ]
             )

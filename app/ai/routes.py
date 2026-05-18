@@ -4,7 +4,11 @@ from app.core.dependencies import get_db,get_current_user
 from app.models.note import Note
 from app.models.user import User
 from app.ai.service import generate_summary
-from app.ai.schemas import AskQuestionSchema
+from app.ai.schemas import (
+    AskQuestionSchema,
+    AskUploadedFileSchema,
+    UploadedFileSummarySchema
+)
 from app.ai.service import ask_notes_ai
 from app.ai.service import retrieve_relevant_notes
 from fastapi.responses import StreamingResponse
@@ -12,6 +16,10 @@ from app.ai.service import stream_ai_response
 from app.ai.service import hybrid_retrieval
 from app.ai.service import get_chat_history,conversational_ai_response
 from app.models.chat import ChatMessage
+from app.uploads.service import (
+    build_upload_context,
+    get_upload_chunks
+)
 
 
 router = APIRouter(
@@ -45,6 +53,69 @@ def summarize_note(
     return {
         "note_title": note.title,
         "summary": summary
+    }
+
+
+@router.post("/uploads/summarize")
+def summarize_uploaded_file(
+    data: UploadedFileSummarySchema,
+    current_user: User = Depends(get_current_user)
+):
+
+    chunks = get_upload_chunks(
+        data.filename,
+        current_user.id
+    )
+
+    if not chunks:
+        raise HTTPException(
+            status_code=404,
+            detail="Uploaded file not found or not processed yet"
+        )
+
+    summary = generate_summary(
+        build_upload_context(chunks)
+    )
+
+    return {
+        "filename": data.filename,
+        "summary": summary
+    }
+
+
+@router.post("/uploads/ask")
+def ask_ai_about_uploaded_file(
+    data: AskUploadedFileSchema,
+    current_user: User = Depends(get_current_user)
+):
+
+    chunks = get_upload_chunks(
+        data.filename,
+        current_user.id
+    )
+
+    if not chunks:
+        raise HTTPException(
+            status_code=404,
+            detail="Uploaded file not found or not processed yet"
+        )
+
+    answer = ask_notes_ai(
+        data.question,
+        build_upload_context(chunks)
+    )
+
+    return {
+        "filename": data.filename,
+        "question": data.question,
+        "answer": answer,
+        "sources": [
+            {
+                "source": chunk["source"],
+                "title": chunk["title"]
+            }
+            for chunk in chunks
+        ]
     }
     
 @router.post("/ask")

@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Notes Platform</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f2;
+      --panel: #ffffff;
+      --panel-soft: #f0f4ef;
+      --text: #202420;
+      --muted: #657067;
+      --line: #dfe5dc;
+      --accent: #176b5b;
+      --accent-2: #c85138;
+      --ink: #10221d;
+      --shadow: 0 14px 35px rgba(28, 45, 37, 0.11);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    .sidebar {
+      background: #17221e;
+      color: #f7faf7;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 4px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      background: #dceee7;
+      color: #10372f;
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .brand span {
+      color: #b9c8c0;
+      font-size: 12px;
+    }
+
+    .profile {
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+    }
+
+    .profile strong,
+    .profile span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .profile span {
+      margin-top: 3px;
+      color: #b9c8c0;
+      font-size: 13px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav button {
+      width: 100%;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      color: #edf5ef;
+      background: transparent;
+      text-align: left;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      display: grid;
+      gap: 10px;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .topbar p {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .status {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-head h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--text);
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(23, 107, 91, 0.15);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .row > * {
+      flex: 1 1 150px;
+    }
+
+    .btn {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+      font-weight: 750;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn.secondary {
+      background: #e6ece8;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .btn.warning {
+      background: var(--accent-2);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .auth-screen {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(320px, 470px) 1fr;
+      background: #17221e;
+    }
+
+    .auth-panel {
+      background: var(--bg);
+      padding: 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-panel h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.1;
+    }
+
+    .auth-panel p {
+      color: var(--muted);
+      margin: 0 0 24px;
+    }
+
+    .auth-art {
+      min-height: 100%;
+      padding: 46px;
+      color: #f4fbf7;
+      display: flex;
+      align-items: end;
+      background:
+        linear-gradient(rgba(23, 34, 30, 0.28), rgba(23, 34, 30, 0.82)),
+        url("https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1400&q=80") center/cover;
+    }
+
+    .auth-art h2 {
+      max-width: 620px;
+      margin: 0;
+      font-size: 44px;
+      line-height: 1.05;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 5px;
+      background: #e5ebe6;
+      border-radius: var(--radius);
+      margin-bottom: 18px;
+    }
+
+    .tabs button {
+      min-height: 38px;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .tabs button.active {
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 2px 8px rgba(25, 35, 29, 0.08);
+    }
+
+    .notes-list,
+    .folder-list,
+    .ai-output {
+      display: grid;
+      gap: 10px;
+    }
+
+    .note-item,
+    .folder-item,
+    .answer-box {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .note-item {
+      cursor: pointer;
+    }
+
+    .note-item.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(23, 107, 91, 0.12);
+    }
+
+    .note-item h4,
+    .folder-item strong {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .note-item p,
+    .answer-box p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .empty {
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    .toolbar label {
+      min-width: 160px;
+      flex: 1 1 180px;
+    }
+
+    @media (max-width: 920px) {
+      .app,
+      .auth-screen,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .auth-art {
+        min-height: 280px;
+        order: -1;
+      }
+
+      .auth-art h2 {
+        font-size: 32px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .main,
+      .auth-panel,
+      .auth-art {
+        padding: 20px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .status {
+        text-align: left;
+      }
+
+      .topbar h2,
+      .auth-panel h1 {
+        font-size: 27px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="authScreen" class="auth-screen">
+    <div class="auth-panel">
+      <div class="logo" aria-hidden="true">AI</div>
+      <h1>AI Notes Platform</h1>
+      <p>Sign in to create notes, organize folders, upload documents, and ask AI questions about your knowledge base.</p>
+
+      <div class="tabs" role="tablist" aria-label="Authentication">
+        <button id="loginTab" class="active" type="button">Login</button>
+        <button id="registerTab" type="button">Register</button>
+      </div>
+
+      <form id="loginForm" class="stack">
+        <label>Email
+          <input id="loginEmail" type="email" autocomplete="email" required>
+        </label>
+        <label>Password
+          <input id="loginPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="btn" type="submit">Login</button>
+      </form>
+
+      <form id="registerForm" class="stack hidden">
+        <label>Username
+          <input id="registerUsername" type="text" autocomplete="username" required>
+        </label>
+        <label>Email
+          <input id="registerEmail" type="email" autocomplete="email" required>
+        </label>
+        <label>Password
+          <input id="registerPassword" type="password" autocomplete="new-password" required>
+        </label>
+        <button class="btn" type="submit">Create account</button>
+      </form>
+
+      <div class="stack" style="margin-top: 18px;">
+        <label>API server
+          <input id="apiBase" type="url" value="http://127.0.0.1:8000">
+        </label>
+      </div>
+      <p id="authStatus" class="meta"></p>
+    </div>
+    <div class="auth-art">
+      <h2>Capture ideas, search them later, and let your notes answer back.</h2>
+    </div>
+  </section>
+
+  <section id="appScreen" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">AI</div>
+        <div>
+          <h1>Notes</h1>
+          <span>Workspace</span>
+        </div>
+      </div>
+
+      <div class="profile">
+        <strong id="profileName">Signed in</strong>
+        <span id="profileEmail"></span>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <button class="active" type="button" data-view="notesView">Notes</button>
+        <button type="button" data-view="foldersView">Folders</button>
+        <button type="button" data-view="aiView">Ask AI</button>
+        <button type="button" data-view="uploadsView">Uploads</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="refreshBtn" class="btn secondary" type="button">Refresh</button>
+        <button id="logoutBtn" class="btn warning" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="viewTitle">Notes</h2>
+          <p id="viewSubtitle">Write, update, search, summarize, and organize your notes.</p>
+        </div>
+        <div id="status" class="status"></div>
+      </div>
+
+      <section id="notesView" class="view grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Editor</h3>
+            <button id="newNoteBtn" class="btn secondary" type="button">New</button>
+          </div>
+          <form id="noteForm" class="panel-body stack">
+            <input id="noteId" type="hidden">
+            <label>Title
+              <input id="noteTitle" type="text" required>
+            </label>
+            <label>Content
+              <textarea id="noteContent" required></textarea>
+            </label>
+            <div class="row">
+              <button id="saveNoteBtn" class="btn" type="submit">Save note</button>
+              <button id="deleteNoteBtn" class="btn warning" type="button" disabled>Delete</button>
+            </div>
+            <div class="row">
+              <label>Move to folder
+                <select id="moveFolderSelect"></select>
+              </label>
+              <button id="moveNoteBtn" class="btn secondary" type="button" disabled>Move</button>
+            </div>
+            <button id="summarizeBtn" class="btn secondary" type="button" disabled>Summarize selected note</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Your notes</h3>
+          </div>
+          <div class="panel-body stack">
+            <div class="toolbar">
+              <label>Search
+                <input id="searchInput" type="search" placeholder="Search title">
+              </label>
+              <label>Sort
+                <select id="sortSelect">
+                  <option value="desc">Newest first</option>
+                  <option value="asc">Oldest first</option>
+                </select>
+              </label>
+              <button id="searchBtn" class="btn secondary" type="button">Apply</button>
+            </div>
+            <div id="notesList" class="notes-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="foldersView" class="view grid hidden">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Create folder</h3>
+          </div>
+          <form id="folderForm" class="panel-body stack">
+            <label>Folder name
+              <input id="folderName" type="text" required>
+            </label>
+            <button class="btn" type="submit">Create folder</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Folders</h3>
+          </div>
+          <div class="panel-body">
+            <div id="folderList" class="folder-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="aiView" class="view grid hidden">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Ask your notes</h3>
+          </div>
+          <form id="askForm" class="panel-body stack">
+            <label>Question
+              <textarea id="questionInput" placeholder="What do my notes say about..." required></textarea>
+            </label>
+            <button class="btn" type="submit">Ask AI</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Answer</h3>
+          </div>
+          <div class="panel-body">
+            <div id="aiOutput" class="ai-output">
+              <div class="empty">Ask a question to see an answer with sources.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="uploadsView" class="view grid hidden">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Upload document</h3>
+          </div>
+          <form id="uploadForm" class="panel-body stack">
+            <label>File
+              <input id="uploadFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.docx" required>
+            </label>
+            <button class="btn" type="submit">Upload</button>
+            <p class="meta">PDF and DOCX files are sent for background processing before AI can use them.</p>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Ask uploaded file</h3>
+          </div>
+          <div class="panel-body stack">
+            <div class="row">
+              <label>Processed file
+                <select id="uploadedFileSelect">
+                  <option value="">No processed files yet</option>
+                </select>
+              </label>
+              <button id="refreshUploadsBtn" class="btn secondary" type="button">Refresh files</button>
+            </div>
+            <button id="summarizeUploadBtn" class="btn secondary" type="button" disabled>Summarize selected file</button>
+            <label>Question
+              <textarea id="uploadQuestionInput" placeholder="What does this file say about..."></textarea>
+            </label>
+            <button id="askUploadBtn" class="btn" type="button" disabled>Ask selected file</button>
+            <div id="uploadResult" class="empty">Choose a file to upload.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <script>
+    const state = {
+      token: localStorage.getItem("notes_token") || "",
+      apiBase: localStorage.getItem("notes_api_base") || "http://127.0.0.1:8000",
+      notes: [],
+      folders: [],
+      uploadFiles: [],
+      selectedNoteId: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const apiBaseInput = $("apiBase");
+    apiBaseInput.value = state.apiBase;
+
+    function setStatus(message, target = "status") {
+      const el = $(target);
+      if (!el) return;
+      el.textContent = message || "";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getApiBase() {
+      const base = apiBaseInput.value.trim().replace(/\/$/, "");
+      state.apiBase = base;
+      localStorage.setItem("notes_api_base", base);
+      return base;
+    }
+
+    async function request(path, options = {}) {
+      const headers = new Headers(options.headers || {});
+      if (!(options.body instanceof FormData)) {
+        headers.set("Content-Type", "application/json");
+      }
+      if (state.token) {
+        headers.set("Authorization", `Bearer ${state.token}`);
+      }
+
+      const response = await fetch(`${getApiBase()}${path}`, {
+        ...options,
+        headers
+      });
+
+      let data = null;
+      const text = await response.text();
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = { detail: text };
+        }
+      }
+
+      if (!response.ok) {
+        const detail = data?.detail || data?.message || "Request failed";
+        throw new Error(Array.isArray(detail) ? detail.map((item) => item.msg).join(", ") : detail);
+      }
+
+      return data;
+    }
+
+    function showAuth(show) {
+      $("authScreen").classList.toggle("hidden", !show);
+      $("appScreen").classList.toggle("hidden", show);
+    }
+
+    function setAuthTab(mode) {
+      const isLogin = mode === "login";
+      $("loginTab").classList.toggle("active", isLogin);
+      $("registerTab").classList.toggle("active", !isLogin);
+      $("loginForm").classList.toggle("hidden", !isLogin);
+      $("registerForm").classList.toggle("hidden", isLogin);
+      setStatus("", "authStatus");
+    }
+
+    async function loadProfile() {
+      const profile = await request("/users/me");
+      $("profileName").textContent = profile.username || "Signed in";
+      $("profileEmail").textContent = profile.email || "";
+    }
+
+    async function loadNotes() {
+      const search = encodeURIComponent($("searchInput").value.trim());
+      const sort = $("sortSelect").value;
+      const data = await request(`/notes/?page=1&limit=100&search=${search}&sort=${sort}`);
+      state.notes = data.notes || [];
+      renderNotes();
+    }
+
+    async function loadFolders() {
+      state.folders = await request("/folders/");
+      renderFolders();
+      renderFolderSelect();
+    }
+
+    async function loadUploads() {
+      const data = await request("/api/uploads/");
+      state.uploadFiles = data.files || [];
+      renderUploadSelect();
+    }
+
+    async function refreshAll() {
+      setStatus("Loading...");
+      try {
+        await Promise.all([loadProfile(), loadFolders(), loadNotes(), loadUploads()]);
+        setStatus("Ready");
+      } catch (error) {
+        setStatus(error.message);
+        if (/token|credentials|unauthorized/i.test(error.message)) {
+          logout();
+        }
+      }
+    }
+
+    function renderNotes() {
+      const list = $("notesList");
+      if (!state.notes.length) {
+        list.innerHTML = '<div class="empty">No notes found. Create your first note from the editor.</div>';
+        return;
+      }
+
+      list.innerHTML = state.notes.map((note) => `
+        <article class="note-item ${note.id === state.selectedNoteId ? "active" : ""}" data-note-id="${note.id}">
+          <h4>${escapeHtml(note.title)}</h4>
+          <p>${escapeHtml((note.content || "").slice(0, 180))}${(note.content || "").length > 180 ? "..." : ""}</p>
+          <div class="meta">Note #${note.id}${note.folder_id ? ` · Folder #${note.folder_id}` : ""}</div>
+        </article>
+      `).join("");
+
+      list.querySelectorAll(".note-item").forEach((item) => {
+        item.addEventListener("click", () => selectNote(Number(item.dataset.noteId)));
+      });
+    }
+
+    function renderFolders() {
+      const list = $("folderList");
+      if (!state.folders.length) {
+        list.innerHTML = '<div class="empty">No folders yet. Add one to start organizing notes.</div>';
+        return;
+      }
+
+      list.innerHTML = state.folders.map((folder) => `
+        <article class="folder-item">
+          <strong>${escapeHtml(folder.name)}</strong>
+          <div class="meta">Folder #${folder.id}</div>
+          <button class="btn secondary" type="button" data-folder-id="${folder.id}">View notes</button>
+        </article>
+      `).join("");
+
+      list.querySelectorAll("[data-folder-id]").forEach((button) => {
+        button.addEventListener("click", () => loadFolderNotes(Number(button.dataset.folderId)));
+      });
+    }
+
+    function renderFolderSelect() {
+      const select = $("moveFolderSelect");
+      select.innerHTML = '<option value="">Select folder</option>' + state.folders.map((folder) =>
+        `<option value="${folder.id}">${escapeHtml(folder.name)}</option>`
+      ).join("");
+    }
+
+    function renderUploadSelect() {
+      const select = $("uploadedFileSelect");
+      if (!state.uploadFiles.length) {
+        select.innerHTML = '<option value="">No processed files yet</option>';
+        $("summarizeUploadBtn").disabled = true;
+        $("askUploadBtn").disabled = true;
+        return;
+      }
+
+      select.innerHTML = '<option value="">Select processed file</option>' + state.uploadFiles.map((file) =>
+        `<option value="${escapeHtml(file.filename)}">${escapeHtml(file.title || file.filename)}</option>`
+      ).join("");
+      updateUploadActionState();
+    }
+
+    function updateUploadActionState() {
+      const hasFile = Boolean($("uploadedFileSelect").value);
+      $("summarizeUploadBtn").disabled = !hasFile;
+      $("askUploadBtn").disabled = !hasFile;
+    }
+
+    function selectNote(noteId) {
+      const note = state.notes.find((item) => item.id === noteId);
+      if (!note) return;
+      state.selectedNoteId = note.id;
+      $("noteId").value = note.id;
+      $("noteTitle").value = note.title || "";
+      $("noteContent").value = note.content || "";
+      $("deleteNoteBtn").disabled = false;
+      $("moveNoteBtn").disabled = false;
+      $("summarizeBtn").disabled = false;
+      renderNotes();
+    }
+
+    function clearNoteForm() {
+      state.selectedNoteId = null;
+      $("noteForm").reset();
+      $("noteId").value = "";
+      $("deleteNoteBtn").disabled = true;
+      $("moveNoteBtn").disabled = true;
+      $("summarizeBtn").disabled = true;
+      renderNotes();
+    }
+
+    async function saveNote(event) {
+      event.preventDefault();
+      const id = $("noteId").value;
+      const body = JSON.stringify({
+        title: $("noteTitle").value.trim(),
+        content: $("noteContent").value.trim()
+      });
+
+      setStatus(id ? "Updating note..." : "Creating note...");
+      try {
+        await request(id ? `/notes/${id}` : "/notes/", {
+          method: id ? "PUT" : "POST",
+          body
+        });
+        clearNoteForm();
+        await loadNotes();
+        setStatus("Note saved");
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    async function deleteNote() {
+      const id = $("noteId").value;
+      if (!id || !confirm("Delete this note?")) return;
+      setStatus("Deleting note...");
+      try {
+        await request(`/notes/${id}`, { method: "DELETE" });
+        clearNoteForm();
+        await loadNotes();
+        setStatus("Note deleted");
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    async function moveNote() {
+      const noteId = $("noteId").value;
+      const folderId = $("moveFolderSelect").value;
+      if (!noteId || !folderId) {
+        setStatus("Choose a note and folder first");
+        return;
+      }
+      setStatus("Moving note...");
+      try {
+        await request(`/notes/${noteId}/move/${folderId}`, { method: "PUT" });
+        await loadNotes();
+        setStatus("Note moved");
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    async function summarizeNote() {
+      const noteId = $("noteId").value;
+      if (!noteId) return;
+      setStatus("Summarizing...");
+      try {
+        const data = await request(`/ai/summarize/${noteId}`, { method: "POST", body: "{}" });
+        showView("aiView");
+        $("aiOutput").innerHTML = `
+          <div class="answer-box">
+            <strong>${escapeHtml(data.note_title || "Summary")}</strong>
+            <p>${escapeHtml(data.summary)}</p>
+          </div>
+        `;
+        setStatus("Summary ready");
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    async function createFolder(event) {
+      event.preventDefault();
+      setStatus("Creating folder...");
+      try {
+        await request("/folders/", {
+          method: "POST",
+          body: JSON.stringify({ name: $("folderName").value.trim() })
+        });
+        $("folderForm").reset();
+        await loadFolders();
+        setStatus("Folder created");
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    async function loadFolderNotes(folderId) {
+      setStatus("Loading folder notes...");
+      try {
+        const data = await request(`/folders/${folderId}/notes`);
+        state.notes = data.notes || [];
+        showView("notesView");
+        renderNotes();
+        setStatus(`Showing ${data.folder}`);
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    async function askAi(event) {
+      event.preventDefault();
+      $("aiOutput").innerHTML = '<div class="empty">Thinking...</div>';
+      setStatus("Asking AI...");
+      try {
+        const data = await request("/ai/ask", {
+          method: "POST",
+          body: JSON.stringify({ question: $("questionInput").value.trim() })
+        });
+        const sources = (data.sources || []).map((source) =>
+          `<div class="meta">${escapeHtml(source.title || source.source || "Source")}</div>`
+        ).join("");
+        $("aiOutput").innerHTML = `
+          <div class="answer-box">
+            <strong>${escapeHtml(data.question)}</strong>
+            <p>${escapeHtml(data.answer)}</p>
+            ${sources}
+          </div>
+        `;
+        setStatus("Answer ready");
+      } catch (error) {
+        $("aiOutput").innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+        setStatus(error.message);
+      }
+    }
+
+    async function uploadFile(event) {
+      event.preventDefault();
+      const file = $("uploadFile").files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append("file", file);
+      $("uploadResult").className = "empty";
+      $("uploadResult").textContent = "Uploading...";
+      setStatus("Uploading file...");
+      try {
+        const data = await request("/api/uploads/", {
+          method: "POST",
+          body: formData
+        });
+        $("uploadResult").className = "answer-box";
+        $("uploadResult").innerHTML = `
+          <strong>${escapeHtml(data.filename)}</strong>
+          <p>${escapeHtml(data.message)}</p>
+          <div class="meta">Refresh processed files after Celery finishes reading the document.</div>
+        `;
+        $("uploadForm").reset();
+        await loadUploads();
+        setStatus("Upload complete");
+      } catch (error) {
+        $("uploadResult").className = "empty";
+        $("uploadResult").textContent = error.message;
+        setStatus(error.message);
+      }
+    }
+
+    async function refreshUploadedFiles() {
+      setStatus("Loading uploaded files...");
+      try {
+        await loadUploads();
+        setStatus("Uploaded files refreshed");
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    async function summarizeUploadedFile() {
+      const filename = $("uploadedFileSelect").value;
+      if (!filename) return;
+      $("uploadResult").className = "empty";
+      $("uploadResult").textContent = "Summarizing selected file...";
+      setStatus("Summarizing file...");
+      try {
+        const data = await request("/ai/uploads/summarize", {
+          method: "POST",
+          body: JSON.stringify({ filename })
+        });
+        $("uploadResult").className = "answer-box";
+        $("uploadResult").innerHTML = `
+          <strong>${escapeHtml(data.filename)}</strong>
+          <p>${escapeHtml(data.summary)}</p>
+        `;
+        setStatus("File summary ready");
+      } catch (error) {
+        $("uploadResult").className = "empty";
+        $("uploadResult").textContent = error.message;
+        setStatus(error.message);
+      }
+    }
+
+    async function askUploadedFile() {
+      const filename = $("uploadedFileSelect").value;
+      const question = $("uploadQuestionInput").value.trim();
+      if (!filename || !question) {
+        setStatus("Select a file and enter a question first");
+        return;
+      }
+
+      $("uploadResult").className = "empty";
+      $("uploadResult").textContent = "Thinking about selected file...";
+      setStatus("Asking selected file...");
+      try {
+        const data = await request("/ai/uploads/ask", {
+          method: "POST",
+          body: JSON.stringify({ filename, question })
+        });
+        $("uploadResult").className = "answer-box";
+        $("uploadResult").innerHTML = `
+          <strong>${escapeHtml(data.question)}</strong>
+          <p>${escapeHtml(data.answer)}</p>
+          <div class="meta">${escapeHtml(data.filename)}</div>
+        `;
+        setStatus("File answer ready");
+      } catch (error) {
+        $("uploadResult").className = "empty";
+        $("uploadResult").textContent = error.message;
+        setStatus(error.message);
+      }
+    }
+
+    function showView(viewId) {
+      document.querySelectorAll(".view").forEach((view) => {
+        view.classList.toggle("hidden", view.id !== viewId);
+      });
+      document.querySelectorAll(".nav button").forEach((button) => {
+        button.classList.toggle("active", button.dataset.view === viewId);
+      });
+
+      const titles = {
+        notesView: ["Notes", "Write, update, search, summarize, and organize your notes."],
+        foldersView: ["Folders", "Create folders and review the notes inside them."],
+        aiView: ["Ask AI", "Ask questions and get answers grounded in your notes."],
+        uploadsView: ["Uploads", "Upload PDFs, DOCX files, and images to your workspace."]
+      };
+      $("viewTitle").textContent = titles[viewId][0];
+      $("viewSubtitle").textContent = titles[viewId][1];
+    }
+
+    function logout() {
+      state.token = "";
+      localStorage.removeItem("notes_token");
+      showAuth(true);
+      setStatus("", "authStatus");
+    }
+
+    $("loginTab").addEventListener("click", () => setAuthTab("login"));
+    $("registerTab").addEventListener("click", () => setAuthTab("register"));
+    $("logoutBtn").addEventListener("click", logout);
+    $("refreshBtn").addEventListener("click", refreshAll);
+    $("newNoteBtn").addEventListener("click", clearNoteForm);
+    $("noteForm").addEventListener("submit", saveNote);
+    $("deleteNoteBtn").addEventListener("click", deleteNote);
+    $("moveNoteBtn").addEventListener("click", moveNote);
+    $("summarizeBtn").addEventListener("click", summarizeNote);
+    $("folderForm").addEventListener("submit", createFolder);
+    $("askForm").addEventListener("submit", askAi);
+    $("uploadForm").addEventListener("submit", uploadFile);
+    $("uploadedFileSelect").addEventListener("change", updateUploadActionState);
+    $("refreshUploadsBtn").addEventListener("click", refreshUploadedFiles);
+    $("summarizeUploadBtn").addEventListener("click", summarizeUploadedFile);
+    $("askUploadBtn").addEventListener("click", askUploadedFile);
+    $("searchBtn").addEventListener("click", loadNotes);
+    $("sortSelect").addEventListener("change", loadNotes);
+
+    document.querySelectorAll(".nav button").forEach((button) => {
+      button.addEventListener("click", () => showView(button.dataset.view));
+    });
+
+    $("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setStatus("Logging in...", "authStatus");
+      try {
+        const data = await request("/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email: $("loginEmail").value.trim(),
+            password: $("loginPassword").value
+          })
+        });
+        state.token = data.access_token;
+        localStorage.setItem("notes_token", state.token);
+        showAuth(false);
+        await refreshAll();
+      } catch (error) {
+        setStatus(error.message, "authStatus");
+      }
+    });
+
+    $("registerForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setStatus("Creating account...", "authStatus");
+      try {
+        await request("/auth/register", {
+          method: "POST",
+          body: JSON.stringify({
+            username: $("registerUsername").value.trim(),
+            email: $("registerEmail").value.trim(),
+            password: $("registerPassword").value
+          })
+        });
+        setStatus("Account created. You can log in now.", "authStatus");
+        setAuthTab("login");
+        $("loginEmail").value = $("registerEmail").value.trim();
+      } catch (error) {
+        setStatus(error.message, "authStatus");
+      }
+    });
+
+    if (state.token) {
+      showAuth(false);
+      refreshAll();
+    }
+  </script>
+</body>
+</html>
